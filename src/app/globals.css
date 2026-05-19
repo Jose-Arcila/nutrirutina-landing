@@ -1,26 +1,40 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fbfbfa;
+  --foreground: #1c1c1a;
+  --primary: #1e4d2b; /* Deep forest green */
+  --primary-light: #e8f0e9;
+  --accent: #c27803; /* Deep amber */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-accent: var(--accent);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0f1411; /* Dark greenish slate */
+    --foreground: #f2f4f3;
+    --primary: #4ade80; /* Brighter green for dark mode */
+    --primary-light: #1b3823;
+    --accent: #fbbf24;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+@utility bg-pattern-dots {
+  background-image: radial-gradient(var(--color-primary) 1px, transparent 1px);
+  background-size: 24px 24px;
 }
