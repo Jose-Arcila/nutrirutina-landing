@@ -19,10 +19,20 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
-  const whatsappUrl = "https://wa.me/573143639187?text=Hola,%20quiero%20informaci%C3%B3n%20sobre%20los%20planes%20nutricionales%20personalizados.%20Me%20interesa%20recibir%20un%20plan%20adaptado%20a%20mi%20rutina%20y%20objetivos.";
-  const waPlanInicial = "https://wa.me/573143639187?text=" + encodeURIComponent("Hola, me interesa el *Plan Inicial*. Quiero más información.");
-  const waPlanNutrirutina = "https://wa.me/573143639187?text=" + encodeURIComponent("Hola, me interesa el *Plan Nutrirutina*. Quiero más información.");
-  const waPlanAcompanamiento = "https://wa.me/573143639187?text=" + encodeURIComponent("Hola, me interesa el *Plan Acompañamiento*. Quiero más información.");
+  const whatsappUrl = "https://wa.me/573181741440?text=Hola,%20quiero%20informaci%C3%B3n%20sobre%20los%20planes%20nutricionales%20personalizados.%20Me%20interesa%20recibir%20un%20plan%20adaptado%20a%20mi%20rutina%20y%20objetivos.";
+  const waPlanInicial = "https://wa.me/573181741440?text=" + encodeURIComponent("Hola, me interesa el *Plan Inicial*. Quiero más información.");
+  const waPlanNutrirutina = "https://wa.me/573181741440?text=" + encodeURIComponent("Hola, me interesa el *Plan Nutrirutina*. Quiero más información.");
+  const waPlanAcompanamiento = "https://wa.me/573181741440?text=" + encodeURIComponent("Hola, me interesa el *Plan Acompañamiento*. Quiero más información.");
+
+  const handleWhatsAppClick = () => {
+    if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
+      (window as any).gtag('event', 'conversion', {
+          'send_to': 'AW-18173164847/bWStCPnxy68cEK_60dlD',
+          'value': 1.0,
+          'currency': 'COP'
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground font-sans">
@@ -42,6 +52,7 @@ export default function Home() {
             href={whatsappUrl}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={handleWhatsAppClick}
             className="hidden sm:flex items-center gap-2 bg-primary text-white dark:text-zinc-900 px-5 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-all shadow-sm shadow-primary/20"
           >
             <MessageCircle className="w-4 h-4" />
@@ -67,6 +78,7 @@ export default function Home() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleWhatsAppClick}
                 className="flex items-center justify-center gap-2 bg-primary text-white dark:text-zinc-900 px-6 py-3.5 rounded-full font-medium hover:opacity-90 transition-all shadow-lg shadow-primary/20"
               >
                 <MessageCircle className="w-5 h-5" />
@@ -233,6 +245,7 @@ export default function Home() {
                   href={waPlanInicial}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleWhatsAppClick}
                   className="flex items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-700 px-6 py-3 rounded-full font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all mt-4"
                 >
                   Quiero el Plan Inicial
@@ -281,6 +294,7 @@ export default function Home() {
                   href={waPlanNutrirutina}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleWhatsAppClick}
                   className="flex items-center justify-center gap-2 bg-primary text-white dark:text-zinc-900 px-6 py-3 rounded-full font-medium hover:opacity-90 transition-all mt-4"
                 >
                   Quiero mi Plan Nutrirutina
@@ -318,6 +332,7 @@ export default function Home() {
                   href={waPlanAcompanamiento}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleWhatsAppClick}
                   className="flex items-center justify-center gap-2 border border-zinc-200 dark:border-zinc-700 px-6 py-3 rounded-full font-medium hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all mt-4"
                 >
                   Quiero acompañamiento
@@ -641,6 +656,7 @@ export default function Home() {
                 href={whatsappUrl}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={handleWhatsAppClick}
                 className="flex items-center justify-center gap-2 bg-primary text-white dark:text-zinc-900 px-6 py-3.5 rounded-full font-medium hover:opacity-90 transition-all shadow-lg shadow-primary/20"
               >
                 <MessageCircle className="w-5 h-5" />
