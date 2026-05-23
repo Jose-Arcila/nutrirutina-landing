@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import {
   Check,
@@ -19,10 +20,52 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
-  const whatsappUrl = "https://wa.me/573181741440?text=Hola,%20quiero%20informaci%C3%B3n%20sobre%20los%20planes%20nutricionales%20personalizados.%20Me%20interesa%20recibir%20un%20plan%20adaptado%20a%20mi%20rutina%20y%20objetivos.";
-  const waPlanInicial = "https://wa.me/573181741440?text=" + encodeURIComponent("Hola, me interesa el *Plan Inicial*. Quiero más información.");
-  const waPlanNutrirutina = "https://wa.me/573181741440?text=" + encodeURIComponent("Hola, me interesa el *Plan Nutrirutina*. Quiero más información.");
-  const waPlanAcompanamiento = "https://wa.me/573181741440?text=" + encodeURIComponent("Hola, me interesa el *Plan Acompañamiento*. Quiero más información.");
+  const [referidoCode, setReferidoCode] = useState<string | null>(null);
+  const [currency, setCurrency] = useState<'COP' | 'EUR'>('COP');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const code = params.get('referido');
+      if (code) {
+        setReferidoCode(code);
+        sessionStorage.setItem('referido_code', code);
+      } else {
+        const storedCode = sessionStorage.getItem('referido_code');
+        if (storedCode) {
+          setReferidoCode(storedCode);
+        }
+      }
+    }
+  }, []);
+
+  const prices = {
+    inicial: currency === 'COP' ? '$150.000' : '€39',
+    nutrirutina: {
+      original: currency === 'COP' ? '$300.000' : '€75',
+      discount: currency === 'COP' ? '$250.000' : '€62',
+    },
+    acompanamiento: {
+      original: currency === 'COP' ? '$500.000' : '€125',
+      discount: currency === 'COP' ? '$400.000' : '€99',
+    }
+  };
+
+  const getWhatsAppUrl = (baseMessage: string) => {
+    let message = baseMessage;
+    if (currency === 'EUR') {
+      message += " (Moneda: Euros / España)";
+    }
+    if (referidoCode) {
+      message += `\n\n(Mi código de referido es: ${referidoCode})`;
+    }
+    return `https://wa.me/573181741440?text=${encodeURIComponent(message)}`;
+  };
+
+  const whatsappUrl = getWhatsAppUrl("Hola, quiero información sobre los planes nutricionales personalizados. Me interesa recibir un plan adaptado a mi rutina y objetivos.");
+  const waPlanInicial = getWhatsAppUrl("Hola, me interesa el *Plan Inicial*. Quiero más información.");
+  const waPlanNutrirutina = getWhatsAppUrl("Hola, me interesa el *Plan Nutrirutina*. Quiero más información.");
+  const waPlanAcompanamiento = getWhatsAppUrl("Hola, me interesa el *Plan Acompañamiento*. Quiero más información.");
 
   const handleWhatsAppClick = () => {
     if (typeof window !== 'undefined' && typeof (window as any).gtag === 'function') {
@@ -204,26 +247,48 @@ export default function Home() {
         {/* Section 4 — Plans / packages */}
         <section id="planes" className="bg-zinc-50 dark:bg-zinc-950 py-16">
           <div className="max-w-6xl mx-auto px-6">
-            <div className="text-center mb-16 flex flex-col gap-4">
+            <div className="text-center mb-6 flex flex-col gap-4">
               <span className="text-accent font-medium text-sm tracking-wider uppercase">Inversión en tu Salud</span>
               <h2 className="text-3xl font-bold tracking-tight text-zinc-900 dark:text-zinc-50">Planes diseñados para tu ritmo</h2>
             </div>
 
-            <div className="grid lg:grid-cols-3 gap-8 items-stretch">
+            {/* Premium Currency Toggle */}
+            <div className="flex justify-center items-center gap-3 mb-12">
+              <span className={`text-xs font-bold uppercase tracking-widest transition-colors ${currency === 'COP' ? 'text-primary' : 'text-zinc-400'}`}>COP ($)</span>
+              <button
+                type="button"
+                onClick={() => setCurrency(currency === 'COP' ? 'EUR' : 'COP')}
+                className="w-12 h-6 bg-zinc-200 dark:bg-zinc-800 rounded-full p-1 transition-all duration-300 focus:outline-none relative shadow-inner cursor-pointer"
+                aria-label="Toggle currency"
+              >
+                <div
+                  className={`w-4 h-4 bg-primary dark:bg-emerald-400 rounded-full transition-all duration-300 transform ${
+                    currency === 'EUR' ? 'translate-x-6' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+              <span className={`text-xs font-bold uppercase tracking-widest transition-colors ${currency === 'EUR' ? 'text-primary' : 'text-zinc-400'}`}>EUR (€)</span>
+            </div>
+
+            <div className="grid lg:grid-cols-3 gap-8 items-stretch mt-6">
               {/* Plan 1 */}
-              <div className="bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6">
+              <div className="bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6 relative">
                 <div>
                   <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Plan Inicial</h3>
                   <p className="text-zinc-500 text-sm mt-1">Para quienes quieren empezar con una guía clara y personalizada.</p>
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">$150.000</span>
-                  <span className="text-zinc-500 text-sm">COP</span>
+                  <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">{prices.inicial}</span>
+                  <span className="text-zinc-500 text-sm font-semibold">{currency}</span>
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-zinc-600 dark:text-zinc-400 flex-1">
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <span>Evaluación inicial de hábitos y objetivos</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Diagnóstico Nutricional</span>
                   </li>
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
@@ -236,6 +301,14 @@ export default function Home() {
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
                     <span>Sugerencias prácticas para mejorar hábitos</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Recetario de preparaciones saludables</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Entrega documentada en 1 día</span>
                   </li>
                 </ul>
                 <div className="text-xs text-zinc-500 dark:text-zinc-500 italic mt-auto">
@@ -254,37 +327,57 @@ export default function Home() {
 
               {/* Plan 2 - Featured */}
               <div className="bg-white dark:bg-zinc-900 p-8 rounded-2xl border-2 border-primary relative flex flex-col gap-6 shadow-xl shadow-primary/5">
-                <div className="absolute top-0 right-8 -translate-y-1/2 bg-primary text-white dark:text-zinc-900 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                  Recomendado
+                {/* Store stamp style circular discount badge */}
+                <div className="absolute -top-10 -right-5 w-24 h-24 rounded-full bg-accent text-white dark:text-zinc-950 font-bold flex flex-col items-center justify-center shadow-lg border-2 border-white dark:border-zinc-900 -rotate-12 select-none z-10">
+                  <span className="text-2xl font-black leading-none">17%</span>
+                  <span className="text-[10px] tracking-wider font-black uppercase leading-none mt-1">OFF</span>
                 </div>
+
+                <div className="absolute top-0 left-8 -translate-y-1/2">
+                  <span className="bg-primary text-white dark:text-zinc-900 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
+                    Recomendado
+                  </span>
+                </div>
+
                 <div>
                   <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Plan Nutrirutina</h3>
                   <p className="text-zinc-500 text-sm mt-1">Nuestro plan más recomendado.</p>
                 </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">$300.000</span>
-                  <span className="text-zinc-500 text-sm">COP</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500 line-through">{prices.nutrirutina.original} {currency}</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">{prices.nutrirutina.discount}</span>
+                    <span className="text-zinc-500 text-sm font-semibold">{currency}</span>
+                  </div>
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-zinc-600 dark:text-zinc-400 flex-1">
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span>Evaluación inicial, plan de alimentación personalizado</span>
+                    <span>Evaluación inicial + Valoración y Diagnóstico Nutricional</span>
                   </li>
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span>Opciones para desayuno, almuerzo, cena y meriendas</span>
+                    <span>Plan de alimentación personalizado con 10 opciones diferentes de desayunos, almuerzos, cenas y meriendas para combinar indefinidamente</span>
                   </li>
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span>Guía de compras y sustituciones</span>
+                    <span>Guía de compras</span>
                   </li>
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span>Organización semanal</span>
+                    <span>Lista de intercambios o sustituciones</span>
                   </li>
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span>1 ajuste posterior</span>
+                    <span>Plan Detox emocional para 7 días, integrando la parte mental y mejora de la relación con la comida</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Un ajuste posterior programado en 15 días</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Entrega documentada en 2 días</span>
                   </li>
                 </ul>
                 <div className="text-xs text-zinc-500 dark:text-zinc-500 italic mt-auto">
@@ -302,27 +395,56 @@ export default function Home() {
               </div>
 
               {/* Plan 3 */}
-              <div className="bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-100 dark:border-zinc-800 flex flex-col gap-6">
+              <div className="bg-white dark:bg-zinc-900 p-8 rounded-2xl border border-zinc-100 dark:border-zinc-800 relative flex flex-col gap-6">
+                {/* Store stamp style circular discount badge */}
+                <div className="absolute -top-10 -right-5 w-24 h-24 rounded-full bg-accent text-white dark:text-zinc-950 font-bold flex flex-col items-center justify-center shadow-lg border-2 border-white dark:border-zinc-900 rotate-12 select-none z-10">
+                  <span className="text-2xl font-black leading-none">20%</span>
+                  <span className="text-[10px] tracking-wider font-black uppercase leading-none mt-1">OFF</span>
+                </div>
+
                 <div>
                   <h3 className="text-xl font-bold text-zinc-900 dark:text-zinc-50">Plan Acompañamiento</h3>
                   <p className="text-zinc-500 text-sm mt-1">Para quienes necesitan apoyo para sostener el proceso.</p>
                 </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">$500.000</span>
-                  <span className="text-zinc-500 text-sm">COP</span>
+                <div className="flex flex-col gap-0.5">
+                  <span className="text-xs text-zinc-400 dark:text-zinc-500 line-through">{prices.acompanamiento.original} {currency}</span>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold text-zinc-900 dark:text-zinc-50">{prices.acompanamiento.discount}</span>
+                    <span className="text-zinc-500 text-sm font-semibold">{currency}</span>
+                  </div>
                 </div>
                 <ul className="flex flex-col gap-3 text-sm text-zinc-600 dark:text-zinc-400 flex-1">
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span>Todo lo del Plan Nutrirutina</span>
+                    <span>Evaluación inicial + Valoración y Diagnóstico Nutricional</span>
                   </li>
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span>Seguimiento por WhatsApp durante 2 semanas</span>
+                    <span>Plan de alimentación personalizado con 14 opciones diferentes de desayunos, almuerzos, cenas y meriendas para combinar indefinidamente</span>
                   </li>
                   <li className="flex gap-2 items-start">
                     <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
-                    <span>Check-ins y ajustes según avances y dificultades</span>
+                    <span>Guía de compras</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Lista de intercambios o sustituciones</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Plan Detox emocional para 7 días, integrando la parte mental y mejora de la relación con la comida</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Seguimiento diario personalizado por Whatsapp durante 2 semanas, previa programación horario</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Check-ins y ajustes necesarios según avances y dificultades</span>
+                  </li>
+                  <li className="flex gap-2 items-start">
+                    <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />
+                    <span>Entrega documentada en 5 días</span>
                   </li>
                 </ul>
                 <div className="text-xs text-zinc-500 dark:text-zinc-500 italic mt-auto">

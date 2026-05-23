@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Nutrición en tu Rutina | Planes Personalizados",
     description: "Planes nutricionales realistas y adaptados a tu vida real. Sin dietas imposibles.",
-    url: "https://nutrirutina.com",
+    url: "https://nutrirutina.co",
     siteName: "Nutrirutina",
     images: [
       {
